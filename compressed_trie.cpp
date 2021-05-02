@@ -78,6 +78,8 @@ bool search(struct TrieNode *root, string key)
         return false;
 }
 
+// Returns true if key is a prefix of any element in trie, else
+// false
 bool isPrefix(struct TrieNode *root, string key)
 {
     struct TrieNode *pCrawl = root;
@@ -101,6 +103,8 @@ bool isPrefix(struct TrieNode *root, string key)
     return true;    
 }
 
+// Compresses the "nodes" of the trie that only have one branch
+// into single strings and stores them in the "nodes" string
 void compressTrie(TrieNode *root)
 {
     struct TrieNode *pCrawl = root;
@@ -197,6 +201,7 @@ void compressTrie(TrieNode *root)
     return;
 }
 
+// Prints the nodes present in the compressed trie
 void printCompressedTrieNodes(TrieNode *root)
 {
     struct TrieNode *pCrawl = root;
