@@ -25,8 +25,6 @@ struct TrieNode *getNode(void)
 }
   
 // If not present, inserts key into trie
-// If the key is prefix of trie node, just
-// marks leaf node
 void insert(struct TrieNode *root, string key)
 {
     struct TrieNode *pCrawl = root;
@@ -47,8 +45,80 @@ void insert(struct TrieNode *root, string key)
         }
     }
 }
+
+// If not present, inserts key into trie
+void insertCompressed(struct TrieNode *root, string key)
+{
+    struct TrieNode *pCrawl = root;
   
-// Returns true if key presents in trie, else
+    for (int i = 0; i < key.length(); i++)
+    {
+        if (pCrawl->node != "")
+        {
+            for (int j = 0; j < pCrawl->node.length() && i < key.length(); j++)
+            {
+                if(key[i] == pCrawl->node[j])
+                {
+                    i++;
+                }
+                else
+                {
+                    struct TrieNode *pNodeSplit =  getNode();
+                        
+                    pNodeSplit->zeroChild = pCrawl->zeroChild;
+                    pNodeSplit->oneChild = pCrawl->oneChild;
+                    pNodeSplit->node = pCrawl->node.substr(j+1, pCrawl->node.length()-(j+1));
+                    pCrawl->node = pCrawl->node.substr(0, j);
+
+                    struct TrieNode *pNodeNew =  getNode();
+                    
+                    pNodeNew->node = key.substr(i+1, key.length()-(i+1));
+                    if('0' == pCrawl->node[j])
+                    {
+                        pCrawl->zeroChild = pNodeSplit;
+                        pCrawl->oneChild = pNodeNew;
+                    }
+                    else
+                    {
+                        pCrawl->zeroChild = pNodeNew;
+                        pCrawl->oneChild = pNodeSplit;
+                    }
+                    std::cout << "new node added " << pNodeNew->node << endl;
+                    return;
+                }
+            }
+        }
+        if('0' == key[i])
+        {
+            if(pCrawl->zeroChild != NULL)
+            {
+                pCrawl = pCrawl->zeroChild;
+            }
+            else
+            {
+                pCrawl->node = key.substr(i, key.length()-i);
+                std::cout << "new node added " << pCrawl->node << endl;
+                return;
+            }
+        }
+        else
+        {
+            if(pCrawl->oneChild != NULL)
+            {
+                pCrawl = pCrawl->oneChild;
+            }
+            else
+            {
+                pCrawl->node = key.substr(i, key.length()-i);
+                std::cout << "new node added " << pCrawl->node << endl;
+                return;
+            }
+        }
+    }
+}
+
+  
+// Returns true if key is present in trie, else
 // false
 bool search(struct TrieNode *root, string key)
 {
@@ -243,6 +313,9 @@ int main()
     struct TrieNode *pCrawl = root;
     compressTrie(pCrawl);
     pCrawl = root;
+
+    insertCompressed(root, "00100101111");
+    
     printCompressedTrieNodes(pCrawl);
 
     return 0;
